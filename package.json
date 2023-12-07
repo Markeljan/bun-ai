@@ -1,19 +1,22 @@
 {
   "name": "bun-bot",
-  "module": "index.ts",
+  "scripts": {
+    "dev": "bun src/interfaces/telegram.ts"
+  },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/node-telegram-bot-api": "^0.64.0",
     "bun-types": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "type": "module",
   "dependencies": {
+    "@vercel/kv": "^1.0.0",
+    "ai": "^2.2.27",
     "express": "^4.18.2",
-    "langchain": "^0.0.202",
+    "node-telegram-bot-api": "^0.64.0",
     "openai": "^4.20.1",
-    "twilio": "^4.19.3",
-    "zod": "^3.22.4"
+    "twilio": "^4.19.3"
   }
 }
