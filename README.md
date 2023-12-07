@@ -21,10 +21,10 @@ stateful OpenAI assistants
 - Add tools (function_calls) to be used across agents
 
 
-# Install
+# Setup
 
-Set up .env for interfaces, agents, and tools you want to support.  
-Implement interface in index.ts 
+Create .env with keys for interfaces, agents, and tools you want to support
+Copy or implement an interface in index.ts 
 
 Install
 ```bash
@@ -34,5 +34,10 @@ bun install
 Run:
 
 ```bash
-bun dev
+bun run dev
+```
+
+Build:
+```bash
+bun run build
 ```
