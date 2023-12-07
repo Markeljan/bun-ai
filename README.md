@@ -18,7 +18,7 @@ stateful OpenAI assistants
 
 - more agents
 - more interfaces
-- Add tools (function_calls) to be used across agents / assistants
+- Add tools (function_calls) to be used across agents
 
 
 # Install
