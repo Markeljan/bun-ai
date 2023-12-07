@@ -1,15 +1,38 @@
-# bun-bot
+# bun-ai-bot
+Simple ai agents, tools, and interfaces.
 
-To install dependencies:
+### Agents
 
+**assistant**
+stateful OpenAI assistants 
+
+
+### Interfaces
+
+**telegram**
+
+**twilio** 
+
+
+# Future work
+
+- more agents
+- more interfaces
+- Add tools (function_calls) to be used across agents / assistants
+
+
+# Install
+
+Set up .env for interfaces, agents, and tools you want to support.  
+Implement interface in index.ts 
+
+Install
 ```bash
 bun install
 ```
 
-To run:
+Run:
 
 ```bash
 bun dev
 ```
-
-This project was created using `bun init` in bun v1.0.16. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
