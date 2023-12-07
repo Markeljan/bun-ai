@@ -1,4 +1,4 @@
-# bun-ai-bot
+# bun-ai
 Simple ai agents, tools, and interfaces.
 
 ### Agents
