@@ -130,11 +130,11 @@ export const messageAssistant = async ({ threadId, message }: { threadId?: strin
     // split the string at 4:
     const splitData = dataTrimmed.split("4:");
     // parse remaining data:
-    const parsedData1 = JSON.parse(splitData[0]);
-    const parsedData2 = JSON.parse(splitData[1]);
+    const parsedData1 = JSON.parse(splitData?.[0]);
+    const parsedData2 = JSON.parse(splitData?.[1]);
 
-    const threadId = parsedData1.threadId;
-    const responseText = parsedData2.content[0].text.value;
+    const threadId = parsedData1?.threadId;
+    const responseText = parsedData2?.content?.[0]?.text?.value;
 
     return { output: responseText, threadId: threadId };
   }
