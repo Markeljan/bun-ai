@@ -119,14 +119,12 @@ async function streamToString(stream: any) {
 // Use the function
 
 export const messageAssistant = async ({ threadId, message }: { threadId?: string; message: string }) => {
-  console.log("messaging assistant", { threadId, message });
   const assistantResponse = await sendMessageToThread({ threadId, message });
   const assistantStream = await assistantResponse.body;
 
   if (assistantStream) {
     const data = await streamToString(assistantStream);
 
-    console.log("Stream data:", data);
     // remove the first 2 characters:
     const dataTrimmed = data.substring(2);
     // split the string at 4:
