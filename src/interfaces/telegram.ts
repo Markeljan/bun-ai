@@ -30,10 +30,8 @@ bot.onText(/\/start/, (msg) => {
   }
 });
 
-// listen for everthing except /start
+// listen for tagged messages
 bot.onText(/^(?!\/start)(.*)/, async (msg) => {
-  const chatId = msg.chat.id;
-
   // handle private messages
   if (msg.chat.type === "private") {
     const { username, id: userId } = msg.from || { username: null, id: null };
@@ -57,7 +55,7 @@ bot.onText(/^(?!\/start)(.*)/, async (msg) => {
         }
 
         // send a message to the chat acknowledging receipt of their message
-        bot.sendMessage(chatId, output);
+        bot.sendMessage(msg.chat.id, output);
       } catch (e) {
         console.error(e);
       }
@@ -66,6 +64,10 @@ bot.onText(/^(?!\/start)(.*)/, async (msg) => {
 
   // handle group messages
   if (msg.chat.type === "group" || msg.chat.type === "supergroup") {
+    // require the bot to be tagged in the message (lowercase and uppercase)
+    if (!msg.text?.toLowerCase().includes("@bun_ai_bot")) {
+      return;
+    }
     const { title, id: chatIdGroup } = msg.chat || { title: null, id: null };
     if (title && chatIdGroup && msg.text) {
       const msgWithContex = messageWithContext(msg);
@@ -87,7 +89,7 @@ bot.onText(/^(?!\/start)(.*)/, async (msg) => {
         }
 
         // send a message to the chat acknowledging receipt of their message
-        bot.sendMessage(chatId, output);
+        bot.sendMessage(chatIdGroup, output);
       } catch (e) {
         console.error(e);
       }
