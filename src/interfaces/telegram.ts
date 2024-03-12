@@ -10,12 +10,23 @@ export const bot = new TelegramBot(token, { polling: false });
 // listen for /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, "Welcome to bun-bot!");
-  // save the user to KV
+  const isGroup = msg.chat.type === "group" || msg.chat.type === "supergroup";
+  const startMessage = isGroup
+    ? "Hey! Thanks for the invite!  Please add me as an admin so I can read and respond to messages."
+    : "Hey! Thanks for the invite.  I'm here to help you with your questions.  Just send me a message and I'll do my best to help you out.";
+  bot.sendMessage(chatId, startMessage);
+  // save the user or group to the KV store
   const { username, id: userId } = msg.from || { username: null, id: null };
   if (username && userId) {
     console.log("Storing user", username, userId);
     storeUser({ userId: userId, userDetails: { username, chatId: chatId } });
+  }
+  if (isGroup) {
+    const { title, id: chatIdGroup } = msg.chat || { title: null, id: null };
+    if (title && chatIdGroup) {
+      console.log("Storing group", title, chatIdGroup);
+      storeUser({ userId: chatIdGroup, userDetails: { username: title, chatId: chatIdGroup } });
+    }
   }
 });
 
