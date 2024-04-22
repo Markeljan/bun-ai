@@ -1,9 +1,9 @@
 {
   "name": "bun-ai-bot",
   "scripts": {
-    "dev": "bun index.ts",
-    "build": "bun build ./index.ts --outdir ./build --target node",
-    "start": "bun ./build/index.js"
+    "dev": "bun ./src/index.ts",
+    "build": "bun build --target bun --minify --sourcemap ./src/index.ts --outfile ./out/bun-ai",
+    "start": "bun ./out/bun-ai"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
