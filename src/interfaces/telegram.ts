@@ -1,6 +1,6 @@
 import TelegramBot, { Message } from "node-telegram-bot-api";
 import { messageAssistant } from "../agents/assistant";
-import { getThreadId, storeThreadId, storeUser } from "../kv/actions";
+import { getThread, storeThread, storeUser } from "../kv/actions";
 
 const token = `${process.env.TELEGRAM_BOT_TOKEN}`;
 
@@ -35,16 +35,21 @@ bot.onText(/\/setAgent (.+)/, async (msg, match) => {
   const chatId = msg.chat.id;
   const isGroup = msg.chat.type === "group" || msg.chat.type === "supergroup";
   const agent = match?.[1];
+  console.log("agent", agent);
+  console.log("match", match);
   const { username, id: userId } = msg.from || { username: null, id: null };
-  if (username && userId && agent) {
+
+  const userThread = userId && (await getThread(userId));
+  if (username && userThread && agent) {
     console.log("Storing user", username, userId, "with agent", agent);
-    storeThreadId({ userId: userId, threadId: agent });
+    storeThread({ userId: userId, thread: { ...userThread, assistantId: agent } });
   }
   if (isGroup) {
     const { title, id: chatIdGroup } = msg.chat || { title: null, id: null };
-    if (title && chatIdGroup && agent) {
+    const groupThread = await getThread(chatIdGroup);
+    if (title && chatIdGroup && groupThread && agent) {
       console.log("Storing group", title, chatIdGroup, "with agent", agent);
-      storeThreadId({ userId: chatIdGroup, threadId: agent });
+      storeThread({ userId: chatIdGroup, thread: { ...groupThread, assistantId: agent } });
     }
   }
   bot.sendMessage(chatId, `Set agent to ${agent}`);
@@ -59,19 +64,23 @@ bot.onText(/^(?!\/start)(.*)/, async (msg) => {
       const msgWithContex = messageWithContext(msg);
       console.log("Received message:", msgWithContex);
 
-      const userThreadId = await getThreadId(userId);
+      const userThread = await getThread(userId);
 
       try {
         const { output, threadId } = await messageAssistant({
           message: msgWithContex,
-          threadId: userThreadId,
+          threadId: userThread?.threadId,
+          assistantId: userThread?.assistantId || `${process.env.OPENAI_ASSISTANT_ID}`,
         });
         console.log("Assistant response:", output, threadId);
 
         // if there was no threadId, store the new created threadId
-        if (!userThreadId && threadId) {
+        if (!userThread && threadId) {
           console.log("Storing threadId", threadId, "for user", userId);
-          await storeThreadId({ userId: userId, threadId });
+          await storeThread({
+            userId: userId,
+            thread: { threadId, assistantId: `${process.env.OPENAI_ASSISTANT_ID}` },
+          });
         }
 
         // send a message to the chat acknowledging receipt of their message
@@ -93,19 +102,23 @@ bot.onText(/^(?!\/start)(.*)/, async (msg) => {
       const msgWithContex = messageWithContext(msg);
       console.log("Received message:", msgWithContex);
 
-      const groupThreadId = await getThreadId(chatIdGroup);
+      const groupThread = await getThread(chatIdGroup);
 
       try {
         const { output, threadId } = await messageAssistant({
           message: msgWithContex,
-          threadId: groupThreadId,
+          threadId: groupThread?.threadId,
+          assistantId: groupThread?.assistantId || `${process.env.OPENAI_ASSISTANT_ID}`,
         });
         console.log("Assistant response:", output, threadId);
 
         // if there was no threadId, store the new created threadId
-        if (!groupThreadId && threadId) {
+        if (!groupThread && threadId) {
           console.log("Storing threadId", threadId, "for group", chatIdGroup);
-          await storeThreadId({ userId: chatIdGroup, threadId });
+          await storeThread({
+            userId: chatIdGroup,
+            thread: { threadId, assistantId: `${process.env.OPENAI_ASSISTANT_ID}` },
+          });
         }
 
         // send a message to the chat acknowledging receipt of their message

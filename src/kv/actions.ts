@@ -15,13 +15,18 @@ export async function getUser(userId: string | number) {
   return userDetails as UserDetails | undefined;
 }
 
-export async function storeThreadId({ userId, threadId }: { userId: string | number; threadId: string }) {
+type Thread = {
+  threadId: string;
+  assistantId: string;
+};
+
+export async function storeThread({ userId, thread }: { userId: string | number; thread: Thread }) {
   const threadKey = `threadId:${userId}`;
-  await kv.set(threadKey, threadId);
+  await kv.set(threadKey, thread);
 }
 
-export async function getThreadId(userId: string | number) {
+export async function getThread(userId: string | number) {
   const threadKey = `threadId:${userId}`;
-  const threadId = await kv.get(threadKey);
-  return threadId as string | undefined;
+  const thread = await kv.get(threadKey);
+  return thread as Thread | undefined;
 }

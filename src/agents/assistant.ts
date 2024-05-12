@@ -7,7 +7,15 @@ const openai = new OpenAI({
   apiKey: `${process.env.OPENAI_API_KEY}`,
 });
 
-async function sendMessageToThread({ threadId, message }: { threadId?: string | null; message: string }) {
+async function sendMessageToThread({
+  message,
+  assistantId,
+  threadId,
+}: {
+  message: string;
+  assistantId: string;
+  threadId?: string | null;
+}) {
   // Create a thread if needed
   const resolvedThreadId = threadId ?? (await openai.beta.threads.create({})).id;
 
@@ -22,7 +30,7 @@ async function sendMessageToThread({ threadId, message }: { threadId?: string | 
     async ({ threadId, sendMessage }) => {
       // Run the assistant on the thread
       const run = await openai.beta.threads.runs.create(threadId, {
-        assistant_id: `${process.env.OPENAI_ASSISTANT_ID}`,
+        assistant_id: assistantId,
       });
 
       async function waitForRun(run: OpenAI.Beta.Threads.Runs.Run) {
@@ -118,8 +126,16 @@ async function streamToString(stream: any) {
 
 // Use the function
 
-export const messageAssistant = async ({ threadId, message }: { threadId?: string; message: string }) => {
-  const assistantResponse = await sendMessageToThread({ threadId, message });
+export const messageAssistant = async ({
+  threadId,
+  message,
+  assistantId,
+}: {
+  threadId?: string;
+  message: string;
+  assistantId: string;
+}) => {
+  const assistantResponse = await sendMessageToThread({ threadId, message, assistantId });
   const assistantStream = await assistantResponse.body;
 
   if (assistantStream) {
