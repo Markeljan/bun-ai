@@ -30,6 +30,26 @@ bot.onText(/\/start/, (msg) => {
   }
 });
 
+// set a new threadId for a user or group
+bot.onText(/\/setAgent (.+)/, async (msg, match) => {
+  const chatId = msg.chat.id;
+  const isGroup = msg.chat.type === "group" || msg.chat.type === "supergroup";
+  const agent = match?.[1];
+  const { username, id: userId } = msg.from || { username: null, id: null };
+  if (username && userId && agent) {
+    console.log("Storing user", username, userId, "with agent", agent);
+    storeThreadId({ userId: userId, threadId: agent });
+  }
+  if (isGroup) {
+    const { title, id: chatIdGroup } = msg.chat || { title: null, id: null };
+    if (title && chatIdGroup && agent) {
+      console.log("Storing group", title, chatIdGroup, "with agent", agent);
+      storeThreadId({ userId: chatIdGroup, threadId: agent });
+    }
+  }
+  bot.sendMessage(chatId, `Set agent to ${agent}`);
+});
+
 // listen for tagged messages
 bot.onText(/^(?!\/start)(.*)/, async (msg) => {
   // handle private messages
