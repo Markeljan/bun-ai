@@ -15,7 +15,11 @@ app.post("/sms", async (req, res) => {
 
   const twiml = new MessagingResponse();
 
-  const { output, threadId } = await messageAssistant({ message: content });
+  const { output, threadId } = await messageAssistant({
+    message: content,
+    threadId: sender,
+    assistantId: `${process.env.OPENAI_ASSISTANT_ID}`,
+  });
 
   twiml.message(output);
 

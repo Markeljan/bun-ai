@@ -1,6 +1,5 @@
 import { experimental_AssistantResponse } from "ai";
 import OpenAI from "openai";
-import { MessageContentText } from "openai/resources/beta/threads/messages/messages";
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
@@ -103,7 +102,12 @@ async function sendMessageToThread({
         sendMessage({
           id: message.id,
           role: "assistant",
-          content: message.content.filter((content) => content.type === "text") as Array<MessageContentText>,
+          content: message.content.filter((content) => content.type === "text") as Array<{
+            type: "text";
+            text: {
+              value: string;
+            };
+          }>,
         });
       }
     }
@@ -140,7 +144,6 @@ export const messageAssistant = async ({
 
   if (assistantStream) {
     const data = await streamToString(assistantStream);
-
     // remove the first 2 characters:
     const dataTrimmed = data.substring(2);
     // split the string at 4:
